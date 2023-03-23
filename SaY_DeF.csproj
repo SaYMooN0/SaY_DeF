@@ -7,4 +7,17 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="images\play.png" />
+    <None Remove="images\setting.png" />
+    <None Remove="images\settings.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\play.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\settings.png" />
+  </ItemGroup>
+
 </Project>
