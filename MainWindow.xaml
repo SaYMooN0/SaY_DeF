@@ -10,6 +10,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="source\buttonstyle.xaml" />
+                <ResourceDictionary Source="source\textboxstyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -38,9 +39,28 @@
             </Button>
         </Canvas>
         <Canvas x:Name="SettinsPage" Visibility="Hidden">
-            <TextBox x:Name="TB_Nick" Height="60" Width="300"></TextBox>
-            <Button x:Name="Button_ChangeNick" Content="Confirm" Canvas.Top="150" Click="Button_ChangeNick_Click" Width="100" Height="100"></Button>
-            <Button x:Name="Button_Return" Content="Return" Canvas.Top="300" Click="Button_Return_Click" Width="100" Height="100"></Button>
+            <Grid x:Name="AllTheSettings">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="55*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="SetNickLbl" Grid.Column="0" Content="Nickname:" Foreground="#61C0BF" FontWeight="Bold" FontFamily="Verdana" 
+           HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="4"/>
+                <TextBox x:Name="TB_Nick" Grid.Column="1" Style="{StaticResource RoundTextBox}" Foreground="#61C0BF" FontWeight="Bold" FontFamily="Verdana" 
+             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="4" BorderBrush="#61C0BF"/>
+                <Button x:Name="Button_ChangeNick" Grid.Column="2" Content="Confirm" Click="Button_ChangeNick_Click" Style="{StaticResource ButtonStyle}" Padding="4"  
+                        Foreground="#61C0BF" FontWeight="Bold" FontFamily="Verdana" HorizontalAlignment="Right"/>
+            </Grid>
+            <Button x:Name="Button_Return" Content="Return" Click="Button_Return_Click" Foreground="#61C0BF" FontWeight="Bold" FontFamily="Verdana" Style="{StaticResource ButtonStyle}"/>
         </Canvas>
     </Canvas>
 </Window>
