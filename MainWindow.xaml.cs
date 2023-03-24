@@ -70,8 +70,11 @@ namespace SaY_DeF
 
         private void Button_Play_Click(object sender, RoutedEventArgs e)
         {
-            Game g = new Game();
-            this.Content = g.RecieveScreen();
+            Net_Connector netCon = new Net_Connector();
+            NetworkScreen netScreen = new NetworkScreen();
+            netScreen.SpawnConnectionWindow(ref netCon);
+            //Game g = new Game();
+            //this.Content = g.RecieveScreen();
         }
     }
 }
