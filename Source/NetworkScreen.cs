@@ -15,10 +15,11 @@ namespace SaY_DeF.Source
         TextBox TB_IPEnter;
         Button ButtonSend;
         Window win;
+        Net_Connector NetCon;
         ResourceDictionary roundButtons = new ResourceDictionary(), roundTextBox=new ResourceDictionary();
         public void SpawnConnectionWindow(ref Net_Connector nC)
         {
-
+            NetCon= nC;
             win = new Window();
             win.Height = 400;
             win.Width = 600;
@@ -53,6 +54,8 @@ namespace SaY_DeF.Source
                 MessageBox.Show("Ip Error");
                 return;
             }
+            NetCon.Send(CommandManager.GetConnectionRequest(Settings.myNick), reciever);
+            
         }
         private void WinSizeChanged(object sender, SizeChangedEventArgs e)
         {

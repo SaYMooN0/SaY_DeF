@@ -6,7 +6,7 @@ namespace SaY_DeF.Source
     {
         public const string Divider = "\n";
         public const string CommandFlag = "\r";
-        public const string Request = "Game";
+        public const string Request = "RQST";
         public static Command GetCommand(string message, IPAddress address)
         {
             string[] args = message.Split(Divider);
@@ -18,7 +18,7 @@ namespace SaY_DeF.Source
                 default: return null;
             }
         }
-        public static string GetGameStartRequest(string nickname)
+        public static string GetConnectionRequest(string nickname)
         {
             return CommandFlag + Divider + Request + Divider + nickname;
         }

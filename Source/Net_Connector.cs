@@ -36,7 +36,7 @@ namespace SaY_DeF.Source
 
 
                     Command command = CommandManager.GetCommand(strResult, ipEnd.Address);
-                    if (command.CommandType != CommandType.NotCommand)
+                    if (command.CommandType == CommandType.NotCommand)
                     {
                         MessageBox.Show(strResult);
                     }
