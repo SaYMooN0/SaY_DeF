@@ -14,7 +14,7 @@ namespace SaY_DeF.Source
                 return new Command(CommandType.NotCommand, null, null);
             switch (args[1])
             {
-                case Request: return new Command(CommandType.GameRequest, args[2..], address);
+                case Request: return new Command(CommandType.ConnectionRequest, args[2..], address);
                 default: return null;
             }
         }
@@ -26,6 +26,6 @@ namespace SaY_DeF.Source
     public enum CommandType
     {
         NotCommand,
-        GameRequest
+        ConnectionRequest
     }
 }

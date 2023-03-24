@@ -79,7 +79,7 @@ namespace SaY_DeF.Source
         {
             switch (com.CommandType)
             {
-                case CommandType.GameRequest:
+                case CommandType.ConnectionRequest:
                     {
                         MessageBox.Show("Recieved CommandType Connection Request");
                         break;
