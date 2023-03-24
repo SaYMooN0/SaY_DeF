@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 
 namespace SaY_DeF.Source
 {
@@ -16,10 +19,11 @@ namespace SaY_DeF.Source
         Button ButtonSend;
         Window win;
         Net_Connector NetCon;
-        ResourceDictionary roundButtons = new ResourceDictionary(), roundTextBox=new ResourceDictionary();
+        ResourceDictionary roundButtons = new ResourceDictionary(), roundTextBox=new ResourceDictionary(), roundListBox=new ResourceDictionary();
         public void SpawnConnectionWindow(ref Net_Connector nC)
         {
-            NetCon= nC;
+            NetCon = nC;
+            NetCon.requsetGot += NC_requsetGot;
             win = new Window();
             win.Height = 400;
             win.Width = 600;
@@ -39,12 +43,68 @@ namespace SaY_DeF.Source
                 BorderBrush = brightColor,
                 Background = backColor,
                 TextAlignment = TextAlignment.Center,
-                Style = (Style)roundTextBox["RoundTextBox"]
+                Style = (Style)roundTextBox["RoundTextBox"],
+                Text = "26.86.217.127"
             };
             c.Children.Add(TB_IPEnter);
 
+            roundListBox.Source = new Uri("Source\\ListBoxStyle.xaml", UriKind.Relative);
+            LB_Request = new ListBox(){ Style = (Style)roundListBox["ListBoxStyle"] };
+            c.Children.Add(LB_Request);
+
             win.Content = c;
             win.Show();
+        }
+
+        private void NC_requsetGot(object? sender, Command c)
+        {
+            string str ="Ip:"+ c.Address.ToString() + "\n" + "Nickname:" + c.CommandArguments[0].ToString();
+
+            //MessageBox.Show(str);
+            win.Dispatcher.Invoke(() =>
+            {
+                AddNewGridToListBox(c.Address.ToString(), c.CommandArguments[0].ToString());
+            });
+
+            MessageBox.Show(LB_Request.Items.Count.ToString());
+        }
+        private void AddNewGridToListBox(string Ip, string Nick)
+        {
+            Grid item = new Grid
+            {
+                Width = LB_Request.Width * 0.85,
+                Height = LB_Request.Height / 3,
+            };
+            item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.6, GridUnitType.Star) });
+            item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.2, GridUnitType.Star) });
+            item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.2, GridUnitType.Star) });
+
+            // добавляем элементы в Grid
+            TextBlock tb1 = new TextBlock() { Text = "Столбец 1", VerticalAlignment = VerticalAlignment.Center };
+            Image Img_Yes = new Image()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Source = new BitmapImage(new Uri(@"images\check.png", UriKind.Relative)),
+                Stretch= Stretch.Uniform
+            };
+            Image Img_No = new Image()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Source = new BitmapImage(new Uri(@"images\cross.png", UriKind.Relative)),
+                Stretch = Stretch.Uniform
+            };
+            TextBlock tb3 = new TextBlock() { Text = "Столбец 3", VerticalAlignment = VerticalAlignment.Center };
+
+            Grid.SetColumn(tb1, 0); 
+            Grid.SetColumn(Img_Yes, 1); 
+            Grid.SetColumn(Img_No, 2); 
+
+            item.Children.Add(tb1);
+            item.Children.Add(Img_Yes);
+            item.Children.Add(Img_No);
+            LB_Request.Items.Add(item);
         }
         private void sendButtonClicked(object sender, RoutedEventArgs e)
         {
@@ -61,6 +121,7 @@ namespace SaY_DeF.Source
         {
             ButtonReactionToSizeChang();
             TextBoxReactionToSizeChang();
+            listBoxReactionToSizeChang();
         }
         private void ButtonReactionToSizeChang()
         {
@@ -80,6 +141,16 @@ namespace SaY_DeF.Source
 
             Canvas.SetLeft(TB_IPEnter, (win.Width - TB_IPEnter.Width) / 2);
             Canvas.SetBottom(TB_IPEnter, win.Height / 40+ButtonSend.Height+10);
+        }
+        private void listBoxReactionToSizeChang()
+        {
+            LB_Request.Width = win.Width  / 2.4;
+            LB_Request.Height = win.Height / 3.4;
+            LB_Request.BorderThickness = new Thickness(TB_IPEnter.Height / 18 + 4);
+            LB_Request.FontSize = TB_IPEnter.Width / 7.8;
+
+            Canvas.SetLeft(LB_Request, (win.Width - LB_Request.Width) / 2);
+            Canvas.SetTop(LB_Request, win.Height / 12);
         }
     }
 }

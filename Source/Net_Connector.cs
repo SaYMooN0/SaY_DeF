@@ -13,6 +13,7 @@ namespace SaY_DeF.Source
     {
         private Thread thread;
         Settings settings;
+        public event EventHandler<Command> requsetGot;
         public Net_Connector()
         {
             settings = new Settings();
@@ -81,7 +82,8 @@ namespace SaY_DeF.Source
             {
                 case CommandType.ConnectionRequest:
                     {
-                        MessageBox.Show("Recieved CommandType Connection Request");
+                         if (requsetGot != null)
+                            requsetGot.Invoke(this, com);
                         break;
                     }
             }

@@ -8,16 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\check.png" />
     <None Remove="images\play.png" />
     <None Remove="images\setting.png" />
     <None Remove="images\settings.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="images\check.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="images\play.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="images\settings.png" />
+    <Resource Include="images\settings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
