@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,6 +22,8 @@ namespace SaY_DeF.Source
         Button ButtonSend;
         Window win;
         Net_Connector NetCon;
+        List<IPAddress> sendedRequests = new List<IPAddress>();
+        Dictionary<IPAddress, string> requsts=new Dictionary<IPAddress,string>();
         ResourceDictionary roundButtons = new ResourceDictionary(), roundTextBox=new ResourceDictionary(), roundListBox=new ResourceDictionary();
         public void SpawnConnectionWindow(ref Net_Connector nC)
         {
@@ -31,7 +36,14 @@ namespace SaY_DeF.Source
             Canvas c = new Canvas() { Background = backColor };
 
             roundButtons.Source = new Uri("Source\\ButtonStyle.xaml", UriKind.Relative);
-            ButtonSend = new Button() { Style = (Style)roundButtons["ButtonStyle"], Content = "Connect", Foreground = brightColor, FontWeight = FontWeights.Bold };
+            ButtonSend = new Button()
+            {
+                Style = (Style)roundButtons["ButtonStyle"],
+                Content = "Connect",
+                Foreground = brightColor,
+                FontWeight = FontWeights.Bold,
+                HorizontalContentAlignment = HorizontalAlignment.Center
+            };
             ButtonSend.Click += sendButtonClicked;
             c.Children.Add(ButtonSend);
 
@@ -50,6 +62,7 @@ namespace SaY_DeF.Source
 
             roundListBox.Source = new Uri("Source\\ListBoxStyle.xaml", UriKind.Relative);
             LB_Request = new ListBox(){ Style = (Style)roundListBox["ListBoxStyle"] };
+        
             c.Children.Add(LB_Request);
 
             win.Content = c;
@@ -58,52 +71,62 @@ namespace SaY_DeF.Source
 
         private void NC_requsetGot(object? sender, Command c)
         {
-            string str ="Ip:"+ c.Address.ToString() + "\n" + "Nickname:" + c.CommandArguments[0].ToString();
-
-            //MessageBox.Show(str);
-            win.Dispatcher.Invoke(() =>
+            if (requsts.ContainsKey(c.Address))
+                return;
+            requsts.Add(c.Address, c.CommandArguments[0]);
+            win.Dispatcher.Invoke((Delegate)(() =>
             {
                 AddNewGridToListBox(c.Address.ToString(), c.CommandArguments[0].ToString());
-            });
+                listBoxReactionToSizeChange();
+            }));
 
-            MessageBox.Show(LB_Request.Items.Count.ToString());
         }
         private void AddNewGridToListBox(string Ip, string Nick)
         {
             Grid item = new Grid
             {
                 Width = LB_Request.Width * 0.85,
-                Height = LB_Request.Height / 3,
+                Height = LB_Request.Height / 3.8,
+                
             };
             item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.6, GridUnitType.Star) });
             item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.2, GridUnitType.Star) });
             item.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0.2, GridUnitType.Star) });
 
-            // добавляем элементы в Grid
-            TextBlock tb1 = new TextBlock() { Text = "Столбец 1", VerticalAlignment = VerticalAlignment.Center };
-            Image Img_Yes = new Image()
+            TextBlock tb1 = new TextBlock() { Text = Nick,FontWeight=FontWeights.Bold, VerticalAlignment = VerticalAlignment.Center, Foreground=brightColor };
+            Button btnYes = new Button()
             {
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Source = new BitmapImage(new Uri(@"images\check.png", UriKind.Relative)),
-                Stretch= Stretch.Uniform
+                Style = (Style)roundButtons["ButtonStyle"],
+                BorderBrush = Brushes.Transparent,
+                Content = new Image()
+                {
+                    Source = new BitmapImage(new Uri(@"images\check.png", UriKind.Relative)),
+                    Stretch = Stretch.Uniform
+                }
             };
-            Image Img_No = new Image()
+            btnYes.Click += ButtonYesClicked;
+            Button btnNo = new Button()
             {
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Source = new BitmapImage(new Uri(@"images\cross.png", UriKind.Relative)),
-                Stretch = Stretch.Uniform
+                Style= (Style)roundButtons["ButtonStyle"],
+                BorderBrush = Brushes.Transparent,
+                Content = new Image()
+                {
+                    Source = new BitmapImage(new Uri(@"images\cross.png", UriKind.Relative)),
+                    Stretch = Stretch.Uniform
+                }
             };
-            TextBlock tb3 = new TextBlock() { Text = "Столбец 3", VerticalAlignment = VerticalAlignment.Center };
-
-            Grid.SetColumn(tb1, 0); 
-            Grid.SetColumn(Img_Yes, 1); 
-            Grid.SetColumn(Img_No, 2); 
+            btnNo.Click+=ButtonNoClicked;
+            Grid.SetColumn(tb1, 0);
+            Grid.SetColumn(btnYes, 1);
+            Grid.SetColumn(btnNo, 2);
 
             item.Children.Add(tb1);
-            item.Children.Add(Img_Yes);
-            item.Children.Add(Img_No);
+            item.Children.Add(btnYes);
+            item.Children.Add(btnNo);
             LB_Request.Items.Add(item);
         }
         private void sendButtonClicked(object sender, RoutedEventArgs e)
@@ -114,14 +137,60 @@ namespace SaY_DeF.Source
                 MessageBox.Show("Ip Error");
                 return;
             }
+            TB_IPEnter.Text = "";
+            if (sendedRequests.Contains(reciever))
+            {
+                Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
+                {
+                    ButtonSend.FontSize -= 6;
+                    ButtonSend.Content = "You've already send";
+                    await Task.Delay(760);
+                    ButtonSend.Content = "Connect ";
+                    ButtonSend.FontSize += 6;
+                })));
+                return;
+            }
+                
+            sendedRequests.Add(reciever);
             NetCon.Send(CommandManager.GetConnectionRequest(Settings.myNick), reciever);
-            
+
+            Task t = Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
+            {
+                ButtonSend.FontSize -= 4;
+                ButtonSend.Content = "Request sended";
+                await Task.Delay(600);
+                ButtonSend.Content = "Connect ";
+                ButtonSend.FontSize += 4;
+            })));
+        }
+        private void ButtonYesClicked(object sender, RoutedEventArgs e)
+        {
+            Button b = sender as Button;
+            Grid gr = b.Parent as Grid;
+            TextBlock txt = gr.Children[0] as TextBlock;
+            string nick = txt.Text;
+            string ip = requsts.FirstOrDefault(x => x.Value == nick).Key.ToString();
+            MessageBox.Show("IP: "+ip+"\nNick: "+nick);
+            //MessageBox.Show("Yes"+"\n"+str+"\n"+nick );
+           
+
+        }
+        private void ButtonNoClicked(object sender, RoutedEventArgs e)
+        {
+            Button b = sender as Button;
+            Grid gr = b.Parent as Grid;
+            LB_Request.Items.Remove(gr);
+            TextBlock txt = gr.Children[0] as TextBlock;
+            string nick = txt.Text;
+            IPAddress ip = requsts.FirstOrDefault(x => x.Value == nick).Key;
+            requsts.Remove(ip);
+
         }
         private void WinSizeChanged(object sender, SizeChangedEventArgs e)
         {
             ButtonReactionToSizeChang();
             TextBoxReactionToSizeChang();
-            listBoxReactionToSizeChang();
+            listBoxReactionToSizeChange();
         }
         private void ButtonReactionToSizeChang()
         {
@@ -142,13 +211,20 @@ namespace SaY_DeF.Source
             Canvas.SetLeft(TB_IPEnter, (win.Width - TB_IPEnter.Width) / 2);
             Canvas.SetBottom(TB_IPEnter, win.Height / 40+ButtonSend.Height+10);
         }
-        private void listBoxReactionToSizeChang()
+        private void listBoxReactionToSizeChange()
         {
             LB_Request.Width = win.Width  / 2.4;
-            LB_Request.Height = win.Height / 3.4;
+            LB_Request.Height = win.Height / 3.2;
             LB_Request.BorderThickness = new Thickness(TB_IPEnter.Height / 18 + 4);
             LB_Request.FontSize = TB_IPEnter.Width / 7.8;
-
+            foreach (Grid item in LB_Request.Items)
+            {
+                item.Width = LB_Request.Width * 0.85;
+                item.Height = LB_Request.Height / 3.8;
+                TextBlock tb1 = item.Children[0] as TextBlock;
+                tb1.FontSize = (item.Width + item.Height) / 10;
+                
+            }
             Canvas.SetLeft(LB_Request, (win.Width - LB_Request.Width) / 2);
             Canvas.SetTop(LB_Request, win.Height / 12);
         }

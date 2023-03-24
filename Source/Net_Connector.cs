@@ -28,25 +28,34 @@ namespace SaY_DeF.Source
         {
             try
             {
-                UdpClient uClient = new UdpClient(settings.LocalPort);
-                IPEndPoint ipEnd = null;
+                TcpListener serverSocket = new TcpListener(settings.LocalPort);
+                serverSocket.Start();
+
                 while (true)
                 {
-                    byte[] responce = uClient.Receive(ref ipEnd);
-                    string strResult = Encoding.Unicode.GetString(responce);
+                    TcpClient clientSocket = serverSocket.AcceptTcpClient();
 
+                    byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
+                    NetworkStream networkStream = clientSocket.GetStream();
+                    networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
+                    string strResult = Encoding.Unicode.GetString(bytesFrom);
+
+                    IPEndPoint ipEnd = (IPEndPoint)clientSocket.Client.RemoteEndPoint;
 
                     Command command = CommandManager.GetCommand(strResult, ipEnd.Address);
                     if (command.CommandType == CommandType.NotCommand)
                     {
                         MessageBox.Show(strResult);
                     }
-                    else 
+                    else
                     {
                         CommandProcessing(command);
                     }
+
+                    clientSocket.Close();
                 }
-                uClient.Close();
+
+                serverSocket.Stop();
             }
             catch (SocketException sockEx)
             {
@@ -59,13 +68,16 @@ namespace SaY_DeF.Source
         }
         public void Send(string message, IPAddress address)
         {
-            UdpClient uClient = new UdpClient();
+            TcpClient clientSocket = new TcpClient();
 
-            IPEndPoint ipEnd = new IPEndPoint(address, settings.LocalPort);
             try
             {
-                byte[] bytes = Encoding.Unicode.GetBytes(message);
-                uClient.Send(bytes, bytes.Length, ipEnd);
+                clientSocket.Connect(new IPEndPoint(address, settings.LocalPort));
+                NetworkStream networkStream = clientSocket.GetStream();
+
+                byte[] bytesToSend = Encoding.Unicode.GetBytes(message);
+                networkStream.Write(bytesToSend, 0, bytesToSend.Length);
+                networkStream.Flush();
             }
             catch (Exception ex)
             {
@@ -73,9 +85,10 @@ namespace SaY_DeF.Source
             }
             finally
             {
-                uClient.Close();
+                clientSocket.Close();
             }
         }
+
         private void CommandProcessing(Command com)
         {
             switch (com.CommandType)

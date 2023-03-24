@@ -76,5 +76,26 @@ namespace SaY_DeF
             //Game g = new Game();
             //this.Content = g.RecieveScreen();
         }
+
+        private void Button_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.Visibility = Visibility.Hidden;
+            SettinsPage.Visibility = Visibility.Visible;
+            Button_Return.Visibility=Visibility.Visible;
+            TB_Nick.Text = Settings.myNick;
+        }
+        private void Button_Return_Click(object sender, RoutedEventArgs e)
+        {
+            MainPage.Visibility = Visibility.Visible;
+            SettinsPage.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_ChangeNick_Click(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(TB_Nick.Text))
+                Settings.myNick = TB_Nick.Text;
+        }
+
+
     }
 }
