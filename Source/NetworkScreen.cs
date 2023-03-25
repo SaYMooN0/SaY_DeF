@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,8 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Threading;
 
 namespace SaY_DeF.Source
 {
@@ -35,7 +32,7 @@ namespace SaY_DeF.Source
             win.SizeChanged += WinSizeChanged;
             Canvas c = new Canvas() { Background = backColor };
 
-            roundButtons.Source = new Uri("Source\\ButtonStyle.xaml", UriKind.Relative);
+            roundButtons.Source = new Uri("resources\\ButtonStyle.xaml", UriKind.Relative);
             ButtonSend = new Button()
             {
                 Style = (Style)roundButtons["ButtonStyle"],
@@ -47,7 +44,7 @@ namespace SaY_DeF.Source
             ButtonSend.Click += sendButtonClicked;
             c.Children.Add(ButtonSend);
 
-            roundTextBox.Source = new Uri("Source\\TextBoxStyle.xaml", UriKind.Relative);
+            roundTextBox.Source = new Uri("resources\\TextBoxStyle.xaml", UriKind.Relative);
             TB_IPEnter = new TextBox()
             {
                 Foreground = brightColor,
@@ -60,7 +57,7 @@ namespace SaY_DeF.Source
             };
             c.Children.Add(TB_IPEnter);
 
-            roundListBox.Source = new Uri("Source\\ListBoxStyle.xaml", UriKind.Relative);
+            roundListBox.Source = new Uri("resources\\ListBoxStyle.xaml", UriKind.Relative);
             LB_Request = new ListBox(){ Style = (Style)roundListBox["ListBoxStyle"] };
         
             c.Children.Add(LB_Request);

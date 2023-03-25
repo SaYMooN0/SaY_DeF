@@ -9,8 +9,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="source\buttonstyle.xaml" />
-                <ResourceDictionary Source="source\textboxstyle.xaml" />
+                <ResourceDictionary Source="resources\buttonstyle.xaml" />
+                <ResourceDictionary Source="resources\textboxstyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
