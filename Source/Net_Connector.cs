@@ -14,8 +14,10 @@ namespace SaY_DeF.Source
     {
         private Thread thread;
         Settings settings;
-        public event EventHandler<Command> requsetGot;
+        public event EventHandler<Command> requestGot;
         public event EventHandler<Command> positiveResponse;
+        public event EventHandler<Command> screenRequstGot;
+        public event EventHandler<Command> SetScreen;
         public Net_Connector()
         {
             settings = new Settings();
@@ -56,8 +58,6 @@ namespace SaY_DeF.Source
 
                     clientSocket.Close();
                 }
-
-                serverSocket.Stop();
             }
             catch (SocketException sockEx)
             {
@@ -68,6 +68,7 @@ namespace SaY_DeF.Source
                 Console.WriteLine("Exception : " + ex.Message);
             }
         }
+
         public bool Send(string message, IPAddress address)
         {
             TcpClient clientSocket = new TcpClient();
@@ -75,13 +76,11 @@ namespace SaY_DeF.Source
             try
             {
                 var connectTask = clientSocket.ConnectAsync(address, settings.LocalPort);
-                if (!connectTask.Wait(TimeSpan.FromSeconds(1.5)))
+                if (!connectTask.Wait(TimeSpan.FromSeconds(3.5)))
                 {
                     throw new TimeoutException("Wrong ip");
                 }
-
                 NetworkStream networkStream = clientSocket.GetStream();
-
                 byte[] bytesToSend = Encoding.Unicode.GetBytes(message);
                 networkStream.Write(bytesToSend, 0, bytesToSend.Length);
                 networkStream.Flush();
@@ -92,7 +91,11 @@ namespace SaY_DeF.Source
                 clientSocket.Close();
                 return false;
             }
-            clientSocket.Close();
+            finally
+            {
+                clientSocket.Dispose();
+            }
+
             return true;
         }
         private void CommandProcessing(Command com)
@@ -101,14 +104,29 @@ namespace SaY_DeF.Source
             {
                 case CommandType.ConnectionRequest:
                     {
-                         if (requsetGot != null)
-                            requsetGot.Invoke(this, com);
+                         if (requestGot != null)
+                            requestGot.Invoke(this, com);
                         break;
                     }
                 case CommandType.RequestApproved:
                     {
                         if (positiveResponse != null)
                             positiveResponse.Invoke(this, com);
+                        
+                        break;
+                    }
+                case CommandType.ScreenRequest:
+                    {
+                        if (screenRequstGot != null)
+                            screenRequstGot.Invoke(this, com);
+
+                        break;
+                    }
+                case CommandType.SetScreen:
+                    {
+                        if (SetScreen != null)
+                            SetScreen.Invoke(this, com);
+
                         break;
                     }
             }

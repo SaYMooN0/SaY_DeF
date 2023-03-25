@@ -14,10 +14,12 @@ namespace SaY_DeF
     public partial class MainWindow : Window
     {
         Settings settings;
+        Net_Connector netCon;
         public MainWindow()
         {
             InitializeComponent();
             LoadSettings();
+            
         }
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -108,8 +110,7 @@ namespace SaY_DeF
             Net_Connector netCon = new Net_Connector();
             NetworkScreen netScreen = new NetworkScreen();
             netScreen.SpawnConnectionWindow(ref netCon);
-            //Game g = new Game();
-            //this.Content = g.RecieveScreen();
+            netScreen.gameStartIsReady += GameStart;
         }
 
         private void Button_Settings_Click(object sender, RoutedEventArgs e)
@@ -141,6 +142,13 @@ namespace SaY_DeF
         {
             base.OnClosing(e);
             SaveSettings();
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window != this)
+                {
+                    window.Close();
+                }
+            }
         }
         private void SaveSettings()
         {
@@ -157,6 +165,11 @@ namespace SaY_DeF
                 string json = file.ReadToEnd();
                 settings = JsonConvert.DeserializeObject<Settings>(json);
             }
+        }
+        private void GameStart(object sender, GameArgs gameArgs)
+        {
+            
+            Game g = new Game(gameArgs, this, netCon);
         }
     }
 }

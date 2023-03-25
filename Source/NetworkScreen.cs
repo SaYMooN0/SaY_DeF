@@ -22,10 +22,11 @@ namespace SaY_DeF.Source
         List<IPAddress> sendedRequests = new List<IPAddress>();
         Dictionary<IPAddress, string> requsts=new Dictionary<IPAddress,string>();
         ResourceDictionary roundButtons = new ResourceDictionary(), roundTextBox=new ResourceDictionary(), roundListBox=new ResourceDictionary();
+        public event EventHandler<GameArgs> gameStartIsReady;
         public void SpawnConnectionWindow(ref Net_Connector nC)
         {
             NetCon = nC;
-            NetCon.requsetGot += NC_requsetGot;
+            NetCon.requestGot += NC_requsetGot;
             NetCon.positiveResponse += Nc_PositiveResponse;
             win = new Window();
             win.Height = 400;
@@ -82,7 +83,10 @@ namespace SaY_DeF.Source
         }
         private void Nc_PositiveResponse(object? sender, Command c)
         {
-            MessageBox.Show("Yes" + "\n" + c.Address.ToString() + "\n" + c.CommandArguments[0].ToString());
+            string nick = c.CommandArguments[0].Replace("\0","");
+            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, c.Address, nick);
+            MessageBox.Show("event rises\n" + ga.ToString());
+            gameStartIsReady.Invoke(this, ga);
         }
         private void AddNewGridToListBox(string Ip, string Nick)
         {
@@ -186,10 +190,10 @@ namespace SaY_DeF.Source
             TextBlock txt = gr.Children[0] as TextBlock;
             string nick = txt.Text;
             IPAddress ip = requsts.FirstOrDefault(x => x.Value == nick).Key;
-            MessageBox.Show("IP: "+ip.ToString()+"\nNick: "+nick);
-
+            nick = nick.Replace("\0","");
             NetCon.Send(CommandManager.GetRequestAgreed(Settings.myNick), ip);
-
+            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, ip, nick);
+            gameStartIsReady.Invoke(this, ga);
 
         }
         private void ButtonNoClicked(object sender, RoutedEventArgs e)
