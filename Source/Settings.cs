@@ -1,31 +1,32 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace SaY_DeF.Source
 {
     internal class Settings
     {
-        public static string myNick = "Bebra";
-        IPAddress ip;
-        int port = 80;
+        [JsonProperty("nickname")]
+        public static string myNick;
+        [JsonProperty("localPort")]
         int localPort = 80;
-        public Settings()
-        {
-            string Host = Dns.GetHostName();
-            ip = Dns.GetHostEntry(Host).AddressList[0];
-        }
-
-        public string Name { get { return myNick; } }
-        public IPAddress IP { get { return ip; } }
-        public int Port { get { return port; } }
-
-        public IPEndPoint EndPoint
+        [JsonIgnore]
+        public static IPAddress IP
         {
             get
             {
-                return new IPEndPoint(ip, port);
+                string hostName = Dns.GetHostName();
+                IPAddress[] addresses = Dns.GetHostAddresses(hostName);
+
+                foreach (IPAddress address in addresses)
+                {
+                    if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        return address;
+                }
+                throw new Exception("IPv4 address not found");
             }
         }
-
+        [JsonIgnore]
         public int LocalPort { get { return localPort; } }
 
     }

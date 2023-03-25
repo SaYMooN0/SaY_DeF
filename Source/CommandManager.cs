@@ -7,6 +7,7 @@ namespace SaY_DeF.Source
         public const string Divider = "\n";
         public const string CommandFlag = "\r";
         public const string Request = "RQST";
+        public const string RequestAgreed = "AGR";
         public static Command GetCommand(string message, IPAddress address)
         {
             string[] args = message.Split(Divider);
@@ -15,6 +16,7 @@ namespace SaY_DeF.Source
             switch (args[1])
             {
                 case Request: return new Command(CommandType.ConnectionRequest, args[2..], address);
+                case RequestAgreed: return new Command(CommandType.RequestApproved, args[2..], address);
                 default: return null;
             }
         }
@@ -22,10 +24,15 @@ namespace SaY_DeF.Source
         {
             return CommandFlag + Divider + Request + Divider + nickname;
         }
+        public static string GetRequestAgreed(string nickname)
+        {
+            return CommandFlag + Divider + RequestAgreed + Divider + nickname;
+        }
     }
     public enum CommandType
     {
         NotCommand,
+        RequestApproved,
         ConnectionRequest
     }
 }

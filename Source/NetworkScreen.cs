@@ -26,6 +26,7 @@ namespace SaY_DeF.Source
         {
             NetCon = nC;
             NetCon.requsetGot += NC_requsetGot;
+            NetCon.positiveResponse += Nc_PositiveResponse;
             win = new Window();
             win.Height = 400;
             win.Width = 600;
@@ -69,14 +70,19 @@ namespace SaY_DeF.Source
         private void NC_requsetGot(object? sender, Command c)
         {
             if (requsts.ContainsKey(c.Address))
+            {
                 return;
+            }
             requsts.Add(c.Address, c.CommandArguments[0]);
             win.Dispatcher.Invoke((Delegate)(() =>
             {
                 AddNewGridToListBox(c.Address.ToString(), c.CommandArguments[0].ToString());
                 listBoxReactionToSizeChange();
             }));
-
+        }
+        private void Nc_PositiveResponse(object? sender, Command c)
+        {
+            MessageBox.Show("Yes" + "\n" + c.Address.ToString() + "\n" + c.CommandArguments[0].ToString());
         }
         private void AddNewGridToListBox(string Ip, string Nick)
         {
@@ -139,26 +145,39 @@ namespace SaY_DeF.Source
             {
                 Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
                 {
-                    ButtonSend.FontSize -= 6;
+                    ButtonSend.FontSize*=0.7;
                     ButtonSend.Content = "You've already send";
-                    await Task.Delay(760);
+                    await Task.Delay(960);
                     ButtonSend.Content = "Connect ";
-                    ButtonSend.FontSize += 6;
+                    ButtonSend.FontSize /=0.7;
                 })));
                 return;
             }
-                
-            sendedRequests.Add(reciever);
-            NetCon.Send(CommandManager.GetConnectionRequest(Settings.myNick), reciever);
-
-            Task t = Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
+            if (reciever.ToString() == Settings.IP.ToString())
             {
-                ButtonSend.FontSize -= 4;
-                ButtonSend.Content = "Request sended";
-                await Task.Delay(600);
-                ButtonSend.Content = "Connect ";
-                ButtonSend.FontSize += 4;
-            })));
+                Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
+                {
+                    ButtonSend.FontSize *=0.62;
+                    ButtonSend.Content = "You can't send yourself";
+                    await Task.Delay(960);
+                    ButtonSend.Content = "Connect ";
+                    ButtonSend.FontSize/=0.62;
+                })));
+                return;
+            }
+            sendedRequests.Add(reciever);
+            if (NetCon.Send(CommandManager.GetConnectionRequest(Settings.myNick), reciever))
+            {
+
+                Task t = Task.Run(() => win.Dispatcher.Invoke(new Action(async delegate
+                {
+                    ButtonSend.FontSize *= 0.75;
+                    ButtonSend.Content = "Request sended";
+                    await Task.Delay(600);
+                    ButtonSend.Content = "Connect ";
+                    ButtonSend.FontSize /= 0.75;
+                })));
+            }
         }
         private void ButtonYesClicked(object sender, RoutedEventArgs e)
         {
@@ -166,10 +185,11 @@ namespace SaY_DeF.Source
             Grid gr = b.Parent as Grid;
             TextBlock txt = gr.Children[0] as TextBlock;
             string nick = txt.Text;
-            string ip = requsts.FirstOrDefault(x => x.Value == nick).Key.ToString();
-            MessageBox.Show("IP: "+ip+"\nNick: "+nick);
-            //MessageBox.Show("Yes"+"\n"+str+"\n"+nick );
-           
+            IPAddress ip = requsts.FirstOrDefault(x => x.Value == nick).Key;
+            MessageBox.Show("IP: "+ip.ToString()+"\nNick: "+nick);
+
+            NetCon.Send(CommandManager.GetRequestAgreed(Settings.myNick), ip);
+
 
         }
         private void ButtonNoClicked(object sender, RoutedEventArgs e)

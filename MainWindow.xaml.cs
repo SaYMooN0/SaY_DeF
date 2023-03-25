@@ -1,17 +1,23 @@
-﻿using SaY_DeF.Source;
+﻿using Newtonsoft.Json;
+using SaY_DeF.Source;
 using System;
+using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
 
 namespace SaY_DeF
 {
     public partial class MainWindow : Window
     {
+        Settings settings;
         public MainWindow()
         {
             InitializeComponent();
-            Button_Play.Resources.Add("Corners", new object());
+            LoadSettings();
         }
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -130,6 +136,27 @@ namespace SaY_DeF
                 await Task.Delay(760);
                 Button_ChangeNick.Content = "Confirm";
             })));
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            SaveSettings();
+        }
+        private void SaveSettings()
+        {
+            using (StreamWriter file = File.CreateText("settings.json"))
+            {
+                string json = JsonConvert.SerializeObject(settings);
+                file.WriteLineAsync(json);
+            }
+        }
+        private void LoadSettings()
+        {
+            using (StreamReader file = File.OpenText("settings.json"))
+            {
+                string json = file.ReadToEnd();
+                settings = JsonConvert.DeserializeObject<Settings>(json);
+            }
         }
     }
 }

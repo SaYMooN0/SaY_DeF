@@ -6,6 +6,7 @@ using System;
 using System.Threading;
 using System.Windows.Input;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace SaY_DeF.Source
 {
@@ -14,6 +15,7 @@ namespace SaY_DeF.Source
         private Thread thread;
         Settings settings;
         public event EventHandler<Command> requsetGot;
+        public event EventHandler<Command> positiveResponse;
         public Net_Connector()
         {
             settings = new Settings();
@@ -66,13 +68,18 @@ namespace SaY_DeF.Source
                 Console.WriteLine("Exception : " + ex.Message);
             }
         }
-        public void Send(string message, IPAddress address)
+        public bool Send(string message, IPAddress address)
         {
             TcpClient clientSocket = new TcpClient();
 
             try
             {
-                clientSocket.Connect(new IPEndPoint(address, settings.LocalPort));
+                var connectTask = clientSocket.ConnectAsync(address, settings.LocalPort);
+                if (!connectTask.Wait(TimeSpan.FromSeconds(1.5)))
+                {
+                    throw new TimeoutException("Wrong ip");
+                }
+
                 NetworkStream networkStream = clientSocket.GetStream();
 
                 byte[] bytesToSend = Encoding.Unicode.GetBytes(message);
@@ -81,14 +88,13 @@ namespace SaY_DeF.Source
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception : " + ex.Message);
-            }
-            finally
-            {
+                MessageBox.Show("Exception : " + ex.Message);
                 clientSocket.Close();
+                return false;
             }
+            clientSocket.Close();
+            return true;
         }
-
         private void CommandProcessing(Command com)
         {
             switch (com.CommandType)
@@ -97,6 +103,12 @@ namespace SaY_DeF.Source
                     {
                          if (requsetGot != null)
                             requsetGot.Invoke(this, com);
+                        break;
+                    }
+                case CommandType.RequestApproved:
+                    {
+                        if (positiveResponse != null)
+                            positiveResponse.Invoke(this, com);
                         break;
                     }
             }
