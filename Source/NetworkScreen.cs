@@ -85,7 +85,7 @@ namespace SaY_DeF.Source
         {
             string nick = c.CommandArguments[0].Replace("\0","");
             GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, c.Address, nick);
-            MessageBox.Show("event rises\n" + ga.ToString());
+          
             gameStartIsReady.Invoke(this, ga);
         }
         private void AddNewGridToListBox(string Ip, string Nick)
@@ -248,6 +248,12 @@ namespace SaY_DeF.Source
             }
             Canvas.SetLeft(LB_Request, (win.Width - LB_Request.Width) / 2);
             Canvas.SetTop(LB_Request, win.Height / 12);
+        }
+        public void WindowClose(object sender, GameArgs gameArgs) {
+            win.Dispatcher.Invoke((Delegate)(() =>
+            {
+                win.Close();
+            }));
         }
     }
 }

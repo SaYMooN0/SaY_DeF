@@ -1,83 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Xml;
+using System.Windows.Shapes;
 
 namespace SaY_DeF.Source
 {
     class Game
     {
-        SolidColorBrush  brushBack, brushMenu;
+        SolidColorBrush brushBack, brushMenu;
         Canvas gameScreen, BottomMenu;
         GameArgs Args;
-        Button Btn_GetEnemyScreen, Btn_ReturnScreen;
+        Button Btn_GetEnemyScreen;
         ResourceDictionary roundButtons = new ResourceDictionary();
         double sWidth, sHeight;
         Net_Connector Net;
+        List<NewTowerTile> ListOfNewTowerTiles = new List<NewTowerTile>();
         Window win;
+        Grid TowerGrid;
+        Label LB_YourTower;
+
         public Game(GameArgs gArgs, Window w, Net_Connector net)
         {
             win = w;
             Net = net;
             Args = gArgs;
-            sWidth= SystemParameters.PrimaryScreenWidth;
+            sWidth = SystemParameters.PrimaryScreenWidth;
             sHeight = SystemParameters.PrimaryScreenHeight;
             roundButtons.Source = new Uri("resources\\ButtonStyle.xaml", UriKind.Relative);
+
+
+
             Net.screenRequstGot += screenRequstGot;
             Net.SetScreen += Net_SetScreen;
-            win.Dispatcher.Invoke(() => 
+            win.Dispatcher.Invoke(() =>
             {
+                FormTowersGrid();
                 brushBack = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8E8"));
-                brushMenu= new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CCCCCC"));
+                brushMenu = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CCCCCC"));
                 gameScreen = new Canvas() { Background = brushBack };
                 BottomMenu = new Canvas() { Background = brushMenu };
+                BottomMenu.Children.Add(TowerGrid);
                 gameScreen.Children.Add(BottomMenu);
-
-                Btn_GetEnemyScreen = new Button() { Style = (Style)roundButtons["ButtonStyle"], Content="Enemy Scren" };
+                
+                Btn_GetEnemyScreen = new Button() { Style = (Style)roundButtons["ButtonStyle"], Content = "Enemy Scren" };
                 Btn_GetEnemyScreen.Click += Btn_GetEnemyScreen_Click;
                 gameScreen.Children.Add(Btn_GetEnemyScreen);
-
+                win.MouseRightButtonDown += Win_MouseRightButtonDown;
                 win.SizeChanged += Win_SizeChanged;
                 win.Content = gameScreen;
-                }
+            }
             );
             MessageBox.Show("Please maximize the window");
         }
 
+        private void Win_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point position = e.GetPosition(e.Source as UIElement);
+            MessageBox.Show($"X: {position.X}\nY:{position.Y}");
+            AddNewTowerTile(position);
+        }
+
         private void Net_SetScreen(object? sender, Command e)
         {
-            string xamlString = e.CommandArguments[0];
-            win.Dispatcher.Invoke(() =>
-            {
-                Canvas canvas = (Canvas)XamlReader.Parse(xamlString);
-                win.Content = canvas;
-            });
+            MessageBox.Show("enemies screen set");
         }
 
         private void screenRequstGot(object? sender, Command e)
         {
-            var canvasToSend = getScreenToSend();
-            var sb = new StringBuilder();
-            var xamlWriter = XmlWriter.Create(sb);
-            XamlWriter.Save(canvasToSend, xamlWriter);
-            string xamlString = sb.ToString();
-            if (!Net.Send(CommandManager.GetScreenToSend(xamlString), Args.EnIP))
-            {
-                MessageBox.Show("Failed to send data");
-            }
+            MessageBox.Show("screen request got");
         }
 
         private void Btn_GetEnemyScreen_Click(object sender, RoutedEventArgs e)
         {
-            string command=CommandManager.GetScreenRequest();
+            string command = CommandManager.GetScreenRequest();
             Net.Send(command, Args.EnIP);
+            MessageBox.Show("request sended");
         }
 
         private void Win_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -85,17 +84,56 @@ namespace SaY_DeF.Source
             gameScreen.Width = sWidth;
             gameScreen.Height = sHeight;
             BottomMenu.Width = gameScreen.Width;
-            BottomMenu.Height= gameScreen.Height*0.25;
-            Canvas.SetTop(BottomMenu,gameScreen.Height*0.75);
+            BottomMenu.Height = gameScreen.Height * 0.22;
+            Canvas.SetTop(BottomMenu, gameScreen.Height * 0.75);
 
             Btn_GetEnemyScreen.Height = BottomMenu.Height / 4;
-            Btn_GetEnemyScreen.Width = Btn_GetEnemyScreen.Height*2;
+            Btn_GetEnemyScreen.Width = Btn_GetEnemyScreen.Height * 3;
+            Btn_GetEnemyScreen.FontSize = Btn_GetEnemyScreen.Height / 4.2;
+            Btn_GetEnemyScreen.BorderThickness = new Thickness(Btn_GetEnemyScreen.FontSize / 3.8);
+            Canvas.SetBottom(Btn_GetEnemyScreen, Btn_GetEnemyScreen.Height * 1.5);
+            Canvas.SetRight(Btn_GetEnemyScreen, Btn_GetEnemyScreen.Height / 2);
+
+            TowerGrid.Height = BottomMenu.Height * 0.75;
+            TowerGrid.Width = TowerGrid.Height * 2;
+            Canvas.SetLeft(TowerGrid, (BottomMenu.Width - TowerGrid.Width) / 4);
+            Canvas.SetTop(TowerGrid, (BottomMenu.Height - TowerGrid.Height) / 1.8);
         }
-        private Canvas getScreenToSend()
+        private void AddNewTowerTile(Point pos)
         {
-            Canvas screen = gameScreen;  
-            screen.Children.Remove(Btn_GetEnemyScreen);
-            return screen;
+            NewTowerTile newTowerTile = new NewTowerTile();
+            newTowerTile.addBtn.Click += BuildTower;
+            Button btn = newTowerTile.addBtn;
+            
+            ListOfNewTowerTiles.Add(newTowerTile);
+            gameScreen.Children.Add(btn);
+            pos.X -= btn.Width / 2;
+            pos.Y -= btn.Height / 2;
+            if (pos.X < 0)
+                pos.X = 0;
+            if (pos.Y < 0)
+                pos.Y = 0;
+            Canvas.SetLeft(btn, pos.X);
+            Canvas.SetTop(btn, pos.Y);
+
+        }
+        private void FormTowersGrid()
+        {
+            TowerGrid = new Grid() {Background=new SolidColorBrush(Colors.Blue), ShowGridLines=true };
+            for (int i = 0; i < 6; i++)
+            {
+                TowerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                TowerGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            }
+        }
+
+
+        private void BuildTower(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Tower Building");
         }
     }
 }

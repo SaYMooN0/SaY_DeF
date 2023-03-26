@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Windows;
 
 namespace SaY_DeF.Source
 {
@@ -19,9 +20,12 @@ namespace SaY_DeF.Source
             {
                 case Request: return new Command(CommandType.ConnectionRequest, args[2..], address);
                 case RequestAgreed: return new Command(CommandType.RequestApproved, args[2..], address);
-                case ScreenRequest: return new Command(CommandType.ScreenRequest, args[2..], address);
+                case ScreenRequest: return new Command(CommandType.ScreenRequest, args[2..], address); 
                 case SetScreen: return new Command(CommandType.SetScreen, args[2..], address);
-                default: return null;
+                default:
+                    {
+                        return null;
+                    }
             }
         }
         public static string GetConnectionRequest(string nickname)
@@ -34,11 +38,12 @@ namespace SaY_DeF.Source
         }
         public static string GetScreenToSend(string screen)
         {
+            
             return CommandFlag + Divider + SetScreen + Divider + screen;
         }
         public static string GetScreenRequest()
         {
-            return CommandFlag + Divider + ScreenRequest;
+            return CommandFlag + Divider + ScreenRequest+Divider;
         }
     }
     public enum CommandType

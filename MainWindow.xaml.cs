@@ -107,9 +107,10 @@ namespace SaY_DeF
         }
         private void Button_Play_Click(object sender, RoutedEventArgs e)
         {
-            Net_Connector netCon = new Net_Connector();
+            netCon = new Net_Connector();
             NetworkScreen netScreen = new NetworkScreen();
             netScreen.SpawnConnectionWindow(ref netCon);
+            netScreen.gameStartIsReady += netScreen.WindowClose;
             netScreen.gameStartIsReady += GameStart;
         }
 
@@ -168,7 +169,6 @@ namespace SaY_DeF
         }
         private void GameStart(object sender, GameArgs gameArgs)
         {
-            
             Game g = new Game(gameArgs, this, netCon);
         }
     }

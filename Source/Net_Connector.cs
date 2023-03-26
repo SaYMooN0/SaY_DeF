@@ -43,7 +43,6 @@ namespace SaY_DeF.Source
                     NetworkStream networkStream = clientSocket.GetStream();
                     networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
                     string strResult = Encoding.Unicode.GetString(bytesFrom);
-
                     IPEndPoint ipEnd = (IPEndPoint)clientSocket.Client.RemoteEndPoint;
 
                     Command command = CommandManager.GetCommand(strResult, ipEnd.Address);
@@ -117,6 +116,7 @@ namespace SaY_DeF.Source
                     }
                 case CommandType.ScreenRequest:
                     {
+                       
                         if (screenRequstGot != null)
                             screenRequstGot.Invoke(this, com);
 
