@@ -13,7 +13,10 @@
     <None Remove="images\plus.png" />
     <None Remove="images\setting.png" />
     <None Remove="images\settings.png" />
-    <None Remove="Towers\GunTower.png" />
+    <None Remove="TowersImages\GunTower.png" />
+    <None Remove="TowersImages\GunTower\GunTower.png" />
+    <None Remove="TowersImages\GunTower\GunTowerHead.png" />
+    <None Remove="TowersImages\GunTower\GunTower_Found_lvl1.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +34,9 @@
     <Resource Include="images\settings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Towers\GunTower.png" />
+    <Resource Include="TowersImages\GunTower\GunTower.png" />
+    <Resource Include="TowersImages\GunTower\GunTowerHead.png" />
+    <Resource Include="TowersImages\GunTower\GunTower_Found_lvl1.png" />
   </ItemGroup>
 
 </Project>

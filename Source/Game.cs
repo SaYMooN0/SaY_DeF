@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SaY_DeF.Source.Towers;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,7 @@ namespace SaY_DeF.Source
         List<NewTowerTile> ListOfNewTowerTiles = new List<NewTowerTile>();
         Window win;
         Grid TowerGrid;
-        List<Button> attackTowers= new List<Button>();
+        List<Button> UITowers= new List<Button>();
         Label LB_YourTower;
 
         public Game(GameArgs gArgs, Window w, Net_Connector net)
@@ -143,33 +144,18 @@ namespace SaY_DeF.Source
                 TowerGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
             }
 
-
-            var image = new Image()
-            {
-                Source = new BitmapImage(new Uri(@"Towers/GunTower.png", UriKind.Relative)),
-                Stretch = Stretch.Uniform,
-            };
-            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
-            Button GunTower = new Button()
-            {
-                Content = image,
-                IsEnabled=false
-            };
-            GunTower.Click += GunTower_Click;
-            attackTowers.Add(GunTower);
-            Grid.SetRow(GunTower, 0);
-            Grid.SetColumn(GunTower, 0);
-            TowerGrid.Children.Add(GunTower);
+            Button UIGunTower = GunTower.UiBtn;
+            UITowers.Add(UIGunTower);
+            Grid.SetRow(UIGunTower, 0);
+            Grid.SetColumn(UIGunTower,0);
+            TowerGrid.Children.Add(UIGunTower);
         }
 
-        private void GunTower_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("GunTower set is building");
-        }
+
 
         private void BuildTower(object sender, RoutedEventArgs e)
         {
-            foreach (Button b in attackTowers)
+            foreach (Button b in UITowers)
                 b.IsEnabled = true;
         }
     }
