@@ -13,6 +13,7 @@
     <None Remove="images\plus.png" />
     <None Remove="images\setting.png" />
     <None Remove="images\settings.png" />
+    <None Remove="Towers\GunTower.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
     <Resource Include="images\settings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Towers\GunTower.png" />
   </ItemGroup>
 
 </Project>
