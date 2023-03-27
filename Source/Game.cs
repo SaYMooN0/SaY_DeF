@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
+using Point = System.Windows.Point;
 
 namespace SaY_DeF.Source
 {
     class Game
     {
-        SolidColorBrush brushBack, brushMenu;
+        SolidColorBrush brushBack, brushMenu, brushMenuBright, brushMenuTheBrightest;
         Canvas gameScreen, BottomMenu, fullScreen;
         GameArgs Args;
         Button Btn_GetEnemyScreen;
@@ -20,8 +22,9 @@ namespace SaY_DeF.Source
         Net_Connector Net;
         List<NewTowerTile> ListOfNewTowerTiles = new List<NewTowerTile>();
         Window win;
-        Grid TowerGrid;
+        Grid TowerAtckGrid, TowerResGrid;
         List<Button> UITowers= new List<Button>();
+        Rectangle towerGridBack;
         Label LB_YourTower;
 
         public Game(GameArgs gArgs, Window w, Net_Connector net)
@@ -39,27 +42,33 @@ namespace SaY_DeF.Source
             Net.SetScreen += Net_SetScreen;
             win.Dispatcher.Invoke(() =>
             {
-                FormTowersGrid();
+                FormTowerAtckGrid();
+                FormTowerResGrid();
                 brushBack = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8E8"));
                 brushMenu = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CCCCCC"));
-               
+                brushMenuBright = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#BEBEC4"));
+                brushMenuTheBrightest = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ADADB2"));
+
+                towerGridBack = new Rectangle() { Fill = brushMenuBright };
+
                 fullScreen = new Canvas() { Background = new SolidColorBrush(Colors.Yellow) };
                 gameScreen = new Canvas() { Background = brushBack };
                 BottomMenu = new Canvas() { Background = brushMenu };
                 fullScreen.Children.Add(gameScreen);
-                BottomMenu.Children.Add(TowerGrid);
+                BottomMenu.Children.Add(towerGridBack);
+                BottomMenu.Children.Add(TowerAtckGrid);
+                BottomMenu.Children.Add(TowerResGrid);
                 fullScreen.Children.Add(BottomMenu);
-                
-                
+
+
                 Btn_GetEnemyScreen = new Button() { Style = (Style)roundButtons["ButtonStyle"], Content = "Enemy Scren" };
                 Btn_GetEnemyScreen.Click += Btn_GetEnemyScreen_Click;
                 fullScreen.Children.Add(Btn_GetEnemyScreen);
                 win.MouseRightButtonDown += Win_MouseRightButtonDown;
                 win.SizeChanged += Win_SizeChanged;
                 win.Content = fullScreen;
-            }
-            );
-            MessageBox.Show("Please maximize the window");
+            });
+            
         }
 
         private void Win_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -99,8 +108,8 @@ namespace SaY_DeF.Source
             Canvas.SetLeft(gameScreen, 0);
 
             BottomMenu.Width = fullScreen.Width;
-            BottomMenu.Height = fullScreen.Height * 0.22;
-            Canvas.SetTop(BottomMenu, fullScreen.Height * 0.78);
+            BottomMenu.Height = fullScreen.Height * 0.224;
+            Canvas.SetTop(BottomMenu, fullScreen.Height * 0.778);
 
             Btn_GetEnemyScreen.Height = BottomMenu.Height / 4;
             Btn_GetEnemyScreen.Width = Btn_GetEnemyScreen.Height * 3;
@@ -109,10 +118,28 @@ namespace SaY_DeF.Source
             Canvas.SetBottom(Btn_GetEnemyScreen, Btn_GetEnemyScreen.Height * 1.5);
             Canvas.SetRight(Btn_GetEnemyScreen, Btn_GetEnemyScreen.Height / 2);
 
-            TowerGrid.Height = BottomMenu.Height * 0.7;
-            TowerGrid.Width = TowerGrid.Height * 2;
-            Canvas.SetLeft(TowerGrid, (BottomMenu.Width - TowerGrid.Width) / 4);
-            Canvas.SetTop(TowerGrid, (BottomMenu.Height - TowerGrid.Height) / 1.9);
+            
+
+            
+
+            towerGridBack.Height = BottomMenu.Height * 0.8;
+            towerGridBack.Width = towerGridBack.Height * 2.9;
+            Canvas.SetLeft(towerGridBack, (BottomMenu.Width - towerGridBack.Height * 2) / 4);
+            Canvas.SetTop(towerGridBack, (BottomMenu.Height - towerGridBack.Height) / 3);
+
+
+
+
+
+            TowerAtckGrid.Height = towerGridBack.Height* 0.9;
+            TowerAtckGrid.Width = TowerAtckGrid.Height * 2;
+            Canvas.SetLeft(TowerAtckGrid, (BottomMenu.Width - TowerAtckGrid.Width) / 4);
+            Canvas.SetTop(TowerAtckGrid, (BottomMenu.Height - TowerAtckGrid.Height) / 2.5);
+
+            TowerResGrid.Height = towerGridBack.Height * 0.9;
+            TowerResGrid.Width = TowerResGrid.Height / 2;
+            Canvas.SetLeft(TowerResGrid, BottomMenu.Width / 4 - towerGridBack.Height / 2 + TowerAtckGrid.Width * 1.3);
+            Canvas.SetTop(TowerResGrid, (BottomMenu.Height - TowerResGrid.Height) / 2.5);
         }
         private void AddNewTowerTile(Point pos)
         {
@@ -132,23 +159,39 @@ namespace SaY_DeF.Source
             Canvas.SetTop(btn, pos.Y);
 
         }
-        private void FormTowersGrid()
+        private void FormTowerAtckGrid()
         {
-            TowerGrid = new Grid() {Background=new SolidColorBrush(Colors.LightCoral), ShowGridLines=true };
+            TowerAtckGrid = new Grid() {ShowGridLines=true};
             for (int i = 0; i < 6; i++)
             {
-                TowerGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+                TowerAtckGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             }
             for (int i = 0; i < 3; i++)
             {
-                TowerGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                TowerAtckGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
             }
 
             Button UIGunTower = GunTower.UiBtn;
+            UIGunTower.BorderBrush = brushMenuTheBrightest;
+            UIGunTower.Padding = new Thickness(2);
+            UIGunTower.BorderThickness = new Thickness(3);
             UITowers.Add(UIGunTower);
             Grid.SetRow(UIGunTower, 0);
             Grid.SetColumn(UIGunTower,0);
-            TowerGrid.Children.Add(UIGunTower);
+            TowerAtckGrid.Children.Add(UIGunTower);
+        }
+
+        private void FormTowerResGrid()
+        {
+            TowerResGrid = new Grid() { ShowGridLines=true};
+            for (int i = 0; i < 2; i++)
+            {
+                TowerResGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                TowerResGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            }
         }
 
 
