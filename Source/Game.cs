@@ -27,6 +27,8 @@ namespace SaY_DeF.Source
         Rectangle towerGridBack;
         Label LB_YourTower;
 
+        GameField Field;
+
         public Game(GameArgs gArgs, Window w, Net_Connector net)
         {
             win = w;
@@ -42,6 +44,7 @@ namespace SaY_DeF.Source
             Net.SetScreen += Net_SetScreen;
             win.Dispatcher.Invoke(() =>
             {
+                Field = new GameField();
                 FormTowerAtckGrid();
                 FormTowerResGrid();
                 brushBack = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8E8"));
@@ -52,7 +55,7 @@ namespace SaY_DeF.Source
                 towerGridBack = new Rectangle() { Fill = brushMenuBright };
 
                 fullScreen = new Canvas() { Background = new SolidColorBrush(Colors.Yellow) };
-                gameScreen = new Canvas() { Background = brushBack };
+                gameScreen = Field.CanvasField;
                 BottomMenu = new Canvas() { Background = brushMenu };
                 fullScreen.Children.Add(gameScreen);
                 BottomMenu.Children.Add(towerGridBack);
@@ -75,7 +78,7 @@ namespace SaY_DeF.Source
         {
 
             Point position = e.GetPosition(e.Source as UIElement);
-            AddNewTowerTile(position);
+            //AddNewTowerTile(position);
         }
 
         private void Net_SetScreen(object? sender, Command e)
@@ -107,6 +110,9 @@ namespace SaY_DeF.Source
             Canvas.SetTop(gameScreen, 0);
             Canvas.SetLeft(gameScreen, 0);
 
+            Canvas.SetLeft(Field.GridField, (gameScreen.Width - Field.GridField.Width) / 2);
+            Canvas.SetTop(Field.GridField, (gameScreen.Height - Field.GridField.Height) / 2);
+
             BottomMenu.Width = fullScreen.Width;
             BottomMenu.Height = fullScreen.Height * 0.224;
             Canvas.SetTop(BottomMenu, fullScreen.Height * 0.778);
@@ -120,15 +126,10 @@ namespace SaY_DeF.Source
 
             
 
-            
-
             towerGridBack.Height = BottomMenu.Height * 0.8;
             towerGridBack.Width = towerGridBack.Height * 2.9;
             Canvas.SetLeft(towerGridBack, (BottomMenu.Width - towerGridBack.Height * 2) / 4);
             Canvas.SetTop(towerGridBack, (BottomMenu.Height - towerGridBack.Height) / 3);
-
-
-
 
 
             TowerAtckGrid.Height = towerGridBack.Height* 0.9;
@@ -141,24 +142,24 @@ namespace SaY_DeF.Source
             Canvas.SetLeft(TowerResGrid, BottomMenu.Width / 4 - towerGridBack.Height / 2 + TowerAtckGrid.Width * 1.3);
             Canvas.SetTop(TowerResGrid, (BottomMenu.Height - TowerResGrid.Height) / 2.5);
         }
-        private void AddNewTowerTile(Point pos)
-        {
-            NewTowerTile newTowerTile = new NewTowerTile();
-            newTowerTile.addBtn.Click += BuildTower;
-            Button btn = newTowerTile.addBtn;
+        //private void AddNewTowerTile(Point pos)
+        //{
+        //    NewTowerTile newTowerTile = new NewTowerTile();
+        //    newTowerTile.addBtn.Click += BuildTower;
+        //    Button btn = newTowerTile.addBtn;
             
-            ListOfNewTowerTiles.Add(newTowerTile);
-            fullScreen.Children.Add(btn);
-            pos.X -= btn.Width / 2;
-            pos.Y -= btn.Height / 2;
-            if (pos.X < 0)
-                pos.X = 0;
-            if (pos.Y < 0)
-                pos.Y = 0;
-            Canvas.SetLeft(btn, pos.X);
-            Canvas.SetTop(btn, pos.Y);
+        //    ListOfNewTowerTiles.Add(newTowerTile);
+        //    fullScreen.Children.Add(btn);
+        //    pos.X -= btn.Width / 2;
+        //    pos.Y -= btn.Height / 2;
+        //    if (pos.X < 0)
+        //        pos.X = 0;
+        //    if (pos.Y < 0)
+        //        pos.Y = 0;
+        //    Canvas.SetLeft(btn, pos.X);
+        //    Canvas.SetTop(btn, pos.Y);
 
-        }
+        //}
         private void FormTowerAtckGrid()
         {
             TowerAtckGrid = new Grid() {ShowGridLines=true};

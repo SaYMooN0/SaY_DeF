@@ -20,9 +20,7 @@ namespace SaY_DeF.Source
             roundButtons.Source = new Uri("resources\\ButtonStyle.xaml", UriKind.Relative);
             addBtn = new Button()
             {
-                Height = 90,
-                Width = 90,
-                BorderThickness = new Thickness(6),
+                BorderThickness = new Thickness(4),
                 Content = new Image()
                 {
                     Source = new BitmapImage(new Uri(@"images\plus.png", UriKind.Relative)),
@@ -41,7 +39,7 @@ namespace SaY_DeF.Source
             Task.Run(() => addBtn.Dispatcher.Invoke(new Action(async delegate
             {
                 addBtn.Background = brightColor;
-                await Task.Delay(760);
+                await Task.Delay(560);
                 addBtn.Background=backColor;
             })));
         }
