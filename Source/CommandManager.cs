@@ -9,8 +9,8 @@ namespace SaY_DeF.Source
         public const string CommandFlag = "\r";
         public const string Request = "RQST";
         public const string RequestAgreed = "AGR";
-        public const string ScreenRequest = "SCRN";
-        public const string SetScreen = "SET_SCREEN";
+        public const string ScreenRequest = "SCRNRQ";
+        public const string SetScreen = "SetSCRN";
         public static Command GetCommand(string message, IPAddress address)
         {
             string[] args = message.Split(Divider);
@@ -20,7 +20,6 @@ namespace SaY_DeF.Source
             {
                 case Request: return new Command(CommandType.ConnectionRequest, args[2..], address);
                 case RequestAgreed: return new Command(CommandType.RequestApproved, args[2..], address);
-                case ScreenRequest: return new Command(CommandType.ScreenRequest, args[2..], address); 
                 case SetScreen: return new Command(CommandType.SetScreen, args[2..], address);
                 default:
                     {
@@ -38,7 +37,6 @@ namespace SaY_DeF.Source
         }
         public static string GetScreenToSend(string screen)
         {
-            
             return CommandFlag + Divider + SetScreen + Divider + screen;
         }
         public static string GetScreenRequest()
@@ -51,7 +49,6 @@ namespace SaY_DeF.Source
         NotCommand,
         RequestApproved,
         ConnectionRequest,
-        ScreenRequest,
         SetScreen
     }
 }

@@ -1,10 +1,14 @@
 ﻿using SaY_DeF.Source.Towers;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Point = System.Windows.Point;
@@ -28,9 +32,10 @@ namespace SaY_DeF.Source
         Label LB_YourTower;
 
         GameField Field;
-
+        bool screenRecieved=false;
         public Game(GameArgs gArgs, Window w, Net_Connector net)
         {
+
             win = w;
             Net = net;
             Args = gArgs;
@@ -38,13 +43,20 @@ namespace SaY_DeF.Source
             sHeight = SystemParameters.PrimaryScreenHeight;
             roundButtons.Source = new Uri("resources\\ButtonStyle.xaml", UriKind.Relative);
 
-
-
-            Net.screenRequstGot += screenRequstGot;
-            Net.SetScreen += Net_SetScreen;
-            win.Dispatcher.Invoke(() =>
+            Net.SetScreen += screenGot;
+            if (IAmServer())
             {
                 Field = new GameField();
+                SendScreen(Field.SerializeField());
+                Net.SetScreen-=screenGot;
+            }
+            else
+            {
+                WaitScreen();
+            }
+            win.Dispatcher.Invoke(() =>
+            {
+                Field.FormVisual();
                 FormTowerAtckGrid();
                 FormTowerResGrid();
                 brushBack = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8E8"));
@@ -71,31 +83,42 @@ namespace SaY_DeF.Source
                 win.SizeChanged += Win_SizeChanged;
                 win.Content = fullScreen;
             });
-            
-        }
 
+        }
+        private bool IAmServer() { return (Args.ServerIP.ToString() == Args.MyIP.ToString()); }
         private void Win_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
 
             Point position = e.GetPosition(e.Source as UIElement);
             //AddNewTowerTile(position);
         }
-
-        private void Net_SetScreen(object? sender, Command e)
+        private void WaitScreen()
         {
-            MessageBox.Show("enemies screen set");
+            while (!screenRecieved)
+            {
+                Thread.Sleep(200);
+            }
         }
-
-        private void screenRequstGot(object? sender, Command e)
+        private void screenGot(object? sender, Command e)
         {
-            MessageBox.Show("screen request got");
+            Field = new GameField(e.CommandArguments[0]);
+            screenRecieved = true;
+
+        }
+        private void SendScreen(string json)
+        {
+           
+            string com = CommandManager.GetScreenToSend(json);
+            File.WriteAllText("test.txt", com);
+            Net.Send(com,Args.EnIP);
         }
 
         private void Btn_GetEnemyScreen_Click(object sender, RoutedEventArgs e)
         {
-            string command = CommandManager.GetScreenRequest();
-            Net.Send(command, Args.EnIP);
-            MessageBox.Show("request sended");
+            MessageBox.Show("This button is not working");
+            //string command = CommandManager.GetScreenRequest();
+            //Net.Send(command, Args.EnIP);
+            //MessageBox.Show("request sended");
         }
 
         private void Win_SizeChanged(object sender, SizeChangedEventArgs e)

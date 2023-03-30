@@ -16,7 +16,6 @@ namespace SaY_DeF.Source
         Settings settings;
         public event EventHandler<Command> requestGot;
         public event EventHandler<Command> positiveResponse;
-        public event EventHandler<Command> screenRequstGot;
         public event EventHandler<Command> SetScreen;
         public Net_Connector()
         {
@@ -34,29 +33,33 @@ namespace SaY_DeF.Source
             {
                 TcpListener serverSocket = new TcpListener(settings.LocalPort);
                 serverSocket.Start();
-
-                while (true)
+                Task.Factory.StartNew(() =>
                 {
-                    TcpClient clientSocket = serverSocket.AcceptTcpClient();
-
-                    byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
-                    NetworkStream networkStream = clientSocket.GetStream();
-                    networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
-                    string strResult = Encoding.Unicode.GetString(bytesFrom);
-                    IPEndPoint ipEnd = (IPEndPoint)clientSocket.Client.RemoteEndPoint;
-
-                    Command command = CommandManager.GetCommand(strResult, ipEnd.Address);
-                    if (command.CommandType == CommandType.NotCommand)
+                    while (true)
                     {
-                        MessageBox.Show(strResult);
-                    }
-                    else
-                    {
-                        CommandProcessing(command);
-                    }
 
-                    clientSocket.Close();
-                }
+                        TcpClient clientSocket = serverSocket.AcceptTcpClient();
+
+                        byte[] bytesFrom = new byte[clientSocket.ReceiveBufferSize];
+                        NetworkStream networkStream = clientSocket.GetStream();
+                        networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
+                        string strResult = Encoding.Unicode.GetString(bytesFrom);
+                        IPEndPoint ipEnd = (IPEndPoint)clientSocket.Client.RemoteEndPoint;
+                        Command command = CommandManager.GetCommand(strResult, ipEnd.Address);
+                        if (command.CommandType == CommandType.NotCommand)
+                        {
+                            MessageBox.Show(strResult);
+                        }
+                        else
+                        {
+                            CommandProcessing(command);
+                        }
+
+                        clientSocket.Close();
+
+
+                    }
+                });
             }
             catch (SocketException sockEx)
             {
@@ -67,7 +70,6 @@ namespace SaY_DeF.Source
                 Console.WriteLine("Exception : " + ex.Message);
             }
         }
-
         public bool Send(string message, IPAddress address)
         {
             TcpClient clientSocket = new TcpClient();
@@ -112,14 +114,6 @@ namespace SaY_DeF.Source
                         if (positiveResponse != null)
                             positiveResponse.Invoke(this, com);
                         
-                        break;
-                    }
-                case CommandType.ScreenRequest:
-                    {
-                       
-                        if (screenRequstGot != null)
-                            screenRequstGot.Invoke(this, com);
-
                         break;
                     }
                 case CommandType.SetScreen:

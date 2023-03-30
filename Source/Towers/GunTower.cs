@@ -15,7 +15,7 @@ namespace SaY_DeF.Source.Towers
         {
             get
             {
-                Image UiContent = new Image() { Source = new BitmapImage(new Uri(@"TowersImages\GunTower\GunTower.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
+                Image UiContent = new Image() { Source = new BitmapImage(new Uri(@"images\TowersImages\GunTower\GunTower.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
                 RenderOptions.SetBitmapScalingMode(UiContent, BitmapScalingMode.NearestNeighbor);
                 Button uiBtn = new Button() { Content = UiContent, IsEnabled = false };
                 uiBtn.Click += UI_Click;
@@ -26,9 +26,9 @@ namespace SaY_DeF.Source.Towers
         public GunTower()
         {
             
-            Foundation = new Image() { Source = new BitmapImage(new Uri(@"TowersImages\GunTower\GunTower_Found_lvl1.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
+            Foundation = new Image() { Source = new BitmapImage(new Uri(@"images\TowersImages\GunTower\GunTower_Found_lvl1.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
             RenderOptions.SetBitmapScalingMode(Foundation, BitmapScalingMode.NearestNeighbor);
-            Head = new Image() { Source = new BitmapImage(new Uri(@"TowersImages\GunTower\GunTowerHead.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
+            Head = new Image() { Source = new BitmapImage(new Uri(@"images\TowersImages\GunTower\GunTowerHead.png", UriKind.Relative)), Stretch = Stretch.Uniform, };
             RenderOptions.SetBitmapScalingMode(Head, BitmapScalingMode.NearestNeighbor);
         }
 

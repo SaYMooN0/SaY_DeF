@@ -23,7 +23,7 @@
                         <ColumnDefinition x:Name="PlayColumnImage" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="PlayImg" Source="images/play.png" Stretch="Uniform" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
+                    <Image x:Name="PlayImg" Source="images/icons/play.png" Stretch="Uniform" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
                     <TextBlock x:Name="PlayTB" Text="Play" Foreground="#61C0BF" FontWeight="Bold" VerticalAlignment="Center" Margin="10 0 0 0" Grid.Column="1" />
                 </Grid>
             </Button>
@@ -33,7 +33,7 @@
                         <ColumnDefinition x:Name="SetColumnImage" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="SetImg" Source="images/settings.png" Stretch="Uniform" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
+                    <Image x:Name="SetImg" Source="images/icons/settings.png" Stretch="Uniform" Margin="1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"/>
                     <TextBlock x:Name="SetTB" Text="Settings" Foreground="#61C0BF" FontWeight="Bold" VerticalAlignment="Center" Margin="10 0 0 0" Grid.Column="1" />
                 </Grid>
             </Button>

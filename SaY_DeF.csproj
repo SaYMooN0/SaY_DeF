@@ -8,15 +8,53 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TowersImages\**" />
+    <EmbeddedResource Remove="TowersImages\**" />
+    <None Remove="TowersImages\**" />
+    <Page Remove="TowersImages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="images\check.png" />
+    <None Remove="images\fieldTyles\AddNewTowerTyle.png" />
+    <None Remove="images\fieldTyles\BuildTowerTyle.png" />
+    <None Remove="images\fieldTyles\newTowerTyle.png" />
+    <None Remove="images\fieldTyles\road.png" />
+    <None Remove="images\icons\check.png" />
+    <None Remove="images\icons\cross.png" />
+    <None Remove="images\icons\play.png" />
+    <None Remove="images\icons\plus.png" />
+    <None Remove="images\icons\settings.png" />
     <None Remove="images\play.png" />
     <None Remove="images\plus.png" />
     <None Remove="images\setting.png" />
     <None Remove="images\settings.png" />
-    <None Remove="TowersImages\GunTower.png" />
-    <None Remove="TowersImages\GunTower\GunTower.png" />
-    <None Remove="TowersImages\GunTower\GunTowerHead.png" />
-    <None Remove="TowersImages\GunTower\GunTower_Found_lvl1.png" />
+    <None Remove="images\TowersImages\GunTower\GunTower.png" />
+    <None Remove="images\TowersImages\GunTower\GunTowerHead.png" />
+    <None Remove="images\TowersImages\GunTower\GunTower_Found_lvl1.png" />
+    <None Remove="images\TowersImages\GunTower\GunTower_Found_lvl2.png" />
+    <None Remove="images\TowersImages\GunTower\GunTower_Found_lvl3.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\fieldTyles\AddNewTowerTyle.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\fieldTyles\BuildTowerTyle.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\fieldTyles\newTowerTyle.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\fieldTyles\road.png" />
+    <Resource Include="images\TowersImages\GunTower\GunTowerHead.png" />
+    <Resource Include="images\TowersImages\GunTower\GunTower_Found_lvl1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\icons\plus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -24,19 +62,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="images\check.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Resource Include="images\icons\check.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="images\play.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Resource Include="images\icons\cross.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="images\plus.png" />
-    <Resource Include="images\settings.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Resource Include="images\icons\play.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="TowersImages\GunTower\GunTower.png" />
-    <Resource Include="TowersImages\GunTower\GunTowerHead.png" />
-    <Resource Include="TowersImages\GunTower\GunTower_Found_lvl1.png" />
+    <Resource Include="images\icons\settings.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\TowersImages\GunTower\GunTower.png" />
+    <Resource Include="images\TowersImages\GunTower\GunTower_Found_lvl2.png" />
+    <Resource Include="images\TowersImages\GunTower\GunTower_Found_lvl3.png" />
   </ItemGroup>
 
 </Project>

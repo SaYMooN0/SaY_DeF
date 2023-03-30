@@ -84,7 +84,7 @@ namespace SaY_DeF.Source
         private void Nc_PositiveResponse(object? sender, Command c)
         {
             string nick = c.CommandArguments[0].Replace("\0","");
-            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, c.Address, nick);
+            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, c.Address, nick, c.Address);
           
             gameStartIsReady.Invoke(this, ga);
         }
@@ -109,7 +109,7 @@ namespace SaY_DeF.Source
                 BorderBrush = Brushes.Transparent,
                 Content = new Image()
                 {
-                    Source = new BitmapImage(new Uri(@"images\check.png", UriKind.Relative)),
+                    Source = new BitmapImage(new Uri(@"images\icons\check.png", UriKind.Relative)),
                     Stretch = Stretch.Uniform
                 }
             };
@@ -122,7 +122,7 @@ namespace SaY_DeF.Source
                 BorderBrush = Brushes.Transparent,
                 Content = new Image()
                 {
-                    Source = new BitmapImage(new Uri(@"images\cross.png", UriKind.Relative)),
+                    Source = new BitmapImage(new Uri(@"images\icons\cross.png", UriKind.Relative)),
                     Stretch = Stretch.Uniform
                 }
             };
@@ -192,7 +192,7 @@ namespace SaY_DeF.Source
             IPAddress ip = requsts.FirstOrDefault(x => x.Value == nick).Key;
             nick = nick.Replace("\0","");
             NetCon.Send(CommandManager.GetRequestAgreed(Settings.myNick), ip);
-            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, ip, nick);
+            GameArgs ga = new GameArgs(Settings.IP, Settings.myNick, ip, nick, Settings.IP);
             gameStartIsReady.Invoke(this, ga);
 
         }

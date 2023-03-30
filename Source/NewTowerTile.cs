@@ -13,23 +13,26 @@ namespace SaY_DeF.Source
     {
         public Button addBtn { get; }
         ResourceDictionary roundButtons = new ResourceDictionary();
-        SolidColorBrush brightColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8C8C8C"));
         SolidColorBrush backColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DCDCDC"));
-        public NewTowerTile()
+        public Point Coordinate { get; }
+        public NewTowerTile(int y, int x)
         {
             roundButtons.Source = new Uri("resources\\ButtonStyle.xaml", UriKind.Relative);
+            Coordinate = new Point(y, x);   
+            Image btnContent = new Image()
+            {
+                Source = new BitmapImage(new Uri(@"images\fieldTyles\AddNewTowerTyle.png", UriKind.Relative)),
+                Stretch = Stretch.Uniform,
+                SnapsToDevicePixels = true
+            };
+            RenderOptions.SetBitmapScalingMode(btnContent, BitmapScalingMode.NearestNeighbor);
             addBtn = new Button()
             {
-                BorderThickness = new Thickness(4),
-                Content = new Image()
-                {
-                    Source = new BitmapImage(new Uri(@"images\plus.png", UriKind.Relative)),
-                    Stretch = Stretch.Uniform
-                },
+                Content = btnContent,
                 Style = (Style)roundButtons["ButtonStyle"],
-                BorderBrush = brightColor,
                 Background=backColor
             };
+            
             addBtn.Click += AddBtn_Click;
 
         }
@@ -38,7 +41,7 @@ namespace SaY_DeF.Source
         {
             Task.Run(() => addBtn.Dispatcher.Invoke(new Action(async delegate
             {
-                addBtn.Background = brightColor;
+                MessageBox.Show($"New tower button clicked on y:{Coordinate.Y} x:{Coordinate.X}");
                 await Task.Delay(560);
                 addBtn.Background=backColor;
             })));
