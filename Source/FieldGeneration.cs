@@ -19,9 +19,10 @@ namespace SaY_DeF.Source
             Finish,
             UsualTyle,
             BigTyle,
-            Tower,
-            Empty
+            Empty,
+            HelpingRoad
         }
+
 
         static public TyleType[,] GenerateField()
         {
@@ -40,6 +41,7 @@ namespace SaY_DeF.Source
             SetRoad();
             SetTyles();
             CorrectTyles();
+            CorrectRoad();
             return field;
         }
 
@@ -471,6 +473,27 @@ namespace SaY_DeF.Source
             field[3, 21] = TyleType.Road;
             field[4, 21] = TyleType.Road;
             field[5, 22] = TyleType.Road;
+        }
+        static bool AnyRoadOnCorner(int i, int j)
+        {
+            return (field[i + 1, j + 1] == TyleType.Road || field[i - 1, j + 1] == TyleType.Road);
+        }
+        static void CorrectRoad()
+        {
+            for (int i = 0; i < field.GetLength(0); i++)
+            {
+                for (int j = 0; j < field.GetLength(1); j++)
+                {
+                    if (field[i, j] == TyleType.Road)
+                    {
+                        if (AnyRoadOnCorner(i, j) && field[i, j + 1] != TyleType.Border && field[i, j + 1] != TyleType.Finish)
+                        {
+                            field[i, j + 1] = TyleType.HelpingRoad;
+                            Console.WriteLine("added road to " + i + "  " + j);
+                        }
+                    }
+                }
+            }
         }
         static void CorrectTyles()
         {

@@ -40,12 +40,12 @@ namespace SaY_DeF.Source
                 {
                     if (Field[i, j] == TyleType.UsualTyle)
                     {
-                        NewTowerTile newTowerTile = new NewTowerTile(i,j);
+                        NewTowerTile newTowerTile = new NewTowerTile(i, j);
                         Grid.SetRow(newTowerTile.addBtn, i);
                         Grid.SetColumn(newTowerTile.addBtn, j);
                         GridField.Children.Add(newTowerTile.addBtn);
                     }
-                    if (Field[i, j] == TyleType.Road)
+                    if (Field[i, j] == TyleType.Road|| Field[i, j] == TyleType.HelpingRoad)
                         SetRoad(i, j);
                 }
             }
